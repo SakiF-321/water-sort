@@ -55,6 +55,7 @@ function render(){
                 selectedTube = null;
                 firstIndex = null;
                 secondIndex = null;
+                // 自身を呼び出して二回目以降の移動に備える
                 render();
             }
         }
