@@ -13,3 +13,7 @@
     height: 50px;
     border: none;
 }
+
+.selected{
+    transform: translateY(-20px);
+}

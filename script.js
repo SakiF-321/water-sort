@@ -13,11 +13,27 @@ const stage =[
     [3, 4, 1, 2],
     []
 ];
+/**初期状態を描画してる */
+
+
+let selectedTube = null;
 
 const game = document.getElementById("game");
 for(let i = 0; i < 5; i++){
     const tube = document.createElement("div");
     tube.className = "tube";
+
+    tube.addEventListener("click",function(){
+        if(selectedTube){
+            selectedTube.classList.remove("selected");
+        }
+        selectedTube = tube;
+        /**クリックされたtubeというHTML要素に、selectedというclassを追加した */
+        tube.classList.add("selected");
+        
+        console.log(selectedTube);
+    })
+
     game.append(tube);
 
     for(let j=0; j<4; j++){
@@ -26,4 +42,5 @@ for(let i = 0; i < 5; i++){
         liquid.style.backgroundColor = colors[stage[i][j]];
         tube.append(liquid);
     }
-}
+    }
+
