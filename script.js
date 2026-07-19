@@ -31,7 +31,7 @@ function render(){
     const tube = document.createElement("div");
     tube.className = "tube";
     tube.dataset.index = i;
-
+    // clickした場合の挙動
     tube.addEventListener("click",function(){
         if(firstIndex === null){
             selectedTube = tube;
@@ -71,6 +71,30 @@ function render(){
     }
     }
 
+}
+
+// 移動が可能か判定する関数
+function canMove(firstIndex, secondIndex){
+    // 移動元が空じゃない
+    if(stage[firstIndex].length > 0){
+        // 移動先に空きがある
+        if(stage[secondIndex].length < 4){
+            // 移動先の色と一致している
+            if(stage[secondIndex].length === 0 || stage[firstIndex][0] === stage[secondIndex][0]){
+                return(true);
+            }else{
+                // 変数の名前に失敗の原因を埋め込み、console.log(失敗理由)としてもいい
+                console.log("色が違うので注げません")
+                return(false)
+            }
+        }else{
+            console.log("もう注げません")
+            return(false);
+        }
+    }else{
+        console.log("注げる液体がありません")
+        return(false);
+    }
 }
 
 render();
