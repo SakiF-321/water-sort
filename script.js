@@ -8,14 +8,14 @@ const colors = {
 
 /**初期状態を描画してる */
 const stage =[
-    [1, 2, 3, 4],
-    [4, 3, 2, 1],
+    [1, 1, 3, 4],
+    [4, 4, 2, 1],
     [2, 1, 4, 3],
     [3, 4, 1, 2],
-    []
+    [1]
 ];
 
-/**現在の選択状態を入れる変数 */
+// 現在の選択状態を入れる変数
 let selectedTube = null;
 let firstIndex = null;
 let secondIndex = null;
@@ -44,14 +44,15 @@ function render(){
                 selectedTube = null;
                 firstIndex = null;
             }else{
-                /**異なる2色を選択した場合 */
+                // 異なる2色を選択した場合
                 secondIndex = Number(tube.dataset.index);
                 console.log(
                     "移動元", firstIndex,
                     "移動先" , secondIndex
                 );
-                const moveColor = stage[firstIndex].shift();
-                stage[secondIndex].unshift(moveColor);
+                // 移動処理
+                moveSomeLiquid(firstIndex, secondIndex);
+
                 selectedTube = null;
                 firstIndex = null;
                 secondIndex = null;
@@ -81,20 +82,71 @@ function canMove(firstIndex, secondIndex){
         if(stage[secondIndex].length < 4){
             // 移動先の色と一致している
             if(stage[secondIndex].length === 0 || stage[firstIndex][0] === stage[secondIndex][0]){
-                return(true);
+                return true;
             }else{
                 // 変数の名前に失敗の原因を埋め込み、console.log(失敗理由)としてもいい
                 console.log("色が違うので注げません")
-                return(false)
+                return false
             }
         }else{
             console.log("もう注げません")
-            return(false);
+            return false;
         }
     }else{
         console.log("注げる液体がありません")
-        return(false);
+        return false;
+    }
+}
+
+// バックエンドで試験管の状態を変更する関数
+function moveSingleLiquid(firstIndex, secondIndex){
+    if (canMove(firstIndex, secondIndex)){
+        // 液体移動処理
+        const moveColor = stage[firstIndex].shift()
+        stage[secondIndex].unshift(moveColor)
+        // render(); // 画面の更新はこの関数の仕事ではない
+    }else{
+        // エラーメッセージの表示
+        alert("注ぐことができません")
+    }
+}
+
+// 移動元の連続色数を確認して数字を返す
+function getContinusColors(firstIndex){
+    const topColor1st = stage[firstIndex][0]
+    let count = 1;
+    for(i = 1; i < 4; i++){
+        if(topColor1st === stage[firstIndex][i]){
+            count = count + 1;
+        }else{
+            break;
+        }
+    }   
+    return(count);
+}
+
+// 移動元の色が実際に何滴注げるのか判断して返す
+function getRemainingSpace(secondIndex){
+    return(4 - stage[secondIndex].length);
+}
+
+// 移動可能な色を取得する。
+function getMovingAmount(firstIndex, secondIndex){
+    const continuousColors = getContinusColors(firstIndex);
+    const remainingSpace = getRemainingSpace(secondIndex);
+    if(continuousColors > remainingSpace){
+        return(remainingSpace)
+    }else{
+        return(continuousColors)
+    }
+}
+
+function moveSomeLiquid(firstIndex, secondIndex){
+    const amount = getMovingAmount(firstIndex, secondIndex);
+    for(i = 0; i < amount; i++){
+        moveSingleLiquid(firstIndex, secondIndex);
     }
 }
 
 render();
+
