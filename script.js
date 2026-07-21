@@ -6,26 +6,29 @@ const colors = {
     4:"#00aa00"
 };
 
-/**初期状態を描画してる */
-const stage =[
-    [1, 1, 3, 4],
+// 固定の初期状態
+const initialStage =[
+    [1, 1, 3, 2],
     [4, 4, 2, 1],
     [2, 1, 4, 3],
     [3, 4, 1, 2],
-    [1]
+    []
 ];
+// 現在のステージの状態
+let stage = structuredClone(initialStage);
+const game = document.getElementById("game");
 
-// 現在の選択状態を入れる変数
 let selectedTube = null;
 let firstIndex = null;
 let secondIndex = null;
 
-const game = document.getElementById("game");
-
+const resetButton = document.getElementById("resetButton");
+resetButton.addEventListener("click", resetGame)
 
 function render(){
     // tubeの中身をすべて削除
     game.innerHTML = "";
+
     // tubeの中身更新
     for(let i = 0; i < 5; i++){
     const tube = document.createElement("div");
@@ -56,7 +59,7 @@ function render(){
                 selectedTube = null;
                 firstIndex = null;
                 secondIndex = null;
-                // 自身を呼び出して二回目以降の移動に備える
+                // 自身を呼び出して二回目以降の移動に備える 実はこれあんまり理解してない
                 render();
             }
         }
@@ -70,9 +73,9 @@ function render(){
         liquid.style.backgroundColor = colors[stage[i][j]];
         tube.append(liquid);
     }
-    }
-
 }
+}
+render();
 
 // 移動が可能か判定する関数
 function canMove(firstIndex, secondIndex){
@@ -148,5 +151,11 @@ function moveSomeLiquid(firstIndex, secondIndex){
     }
 }
 
-render();
+function resetGame(){
+    stage = structuredClone(initialStage);
+    selectedTube = null;
+    firstIndex = null;
+    secondIndex = null;
+    render();
+}
 
