@@ -1,19 +1,21 @@
 console.log("今日も挫折せず続けててえらい");
 const colors = {
-    1:"#ff0000",
-    2:"#0000ff",
-    3:"#ffff00",
-    4:"#00aa00"
+    1:"#ff7f7f",
+    2:"#ffff7f",
+    3:"#7fbfff",
+    4:"#bfff7f"
 };
 
+
 // 固定の初期状態
-const initialStage =[
-    [1, 1, 3, 2],
+const initialStage =[    
+    [2, 1, 3, 3],
     [4, 4, 2, 1],
     [2, 1, 4, 3],
     [3, 4, 1, 2],
     []
 ];
+
 // 現在のステージの状態
 let stage = structuredClone(initialStage);
 const game = document.getElementById("game");
@@ -74,6 +76,7 @@ function render(){
         tube.append(liquid);
     }
 }
+showClearScreen();
 }
 render();
 
@@ -159,3 +162,32 @@ function resetGame(){
     render();
 }
 
+function isTubeClear(index){
+    if(stage[index].length === 0){return true}
+    else if(stage[index].length === 4){
+        if(stage[index][0] === stage[index][1] 
+            && stage[index][0] === stage[index][2] 
+            && stage[index][0] === stage[index][3]){
+                return true}
+    return false}
+}
+
+function isGameClear(){
+    for(let i = 0; i < stage.length; i++){
+        if(!isTubeClear(i)){return false}
+    }return true
+}
+
+function showClearScreen(){
+    if(isGameClear()){
+        clearScreen.classList.remove("hidden")
+    }
+}
+
+function retryStage(){
+    resetGame()
+}
+
+/*function goNextStage(i){
+    stage = structuredClone(initialStage[i+1])
+}*/
