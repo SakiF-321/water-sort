@@ -1,10 +1,16 @@
 .tube{
     width: 60px;
-    height: 200px;
-    border: 3px solid black;
+    height: 220px;
+    border: 3px solid #0f0707cc;
+    background-color: #36363644;
+    border-radius: 4px;/*角の丸み*/    
     flex-direction: column;
     display: flex;
     justify-content: flex-end
+}
+
+#title{
+    color: rgb(65, 38, 23)
 }
 
 #game{

@@ -3,7 +3,7 @@ const colors = {
     1:"#ff7f7f",
     2:"#ffff7f",
     3:"#7fbfff",
-    4:"#bfff7f"
+    4:"#2fda18"
 };
 
 
@@ -19,6 +19,7 @@ const initialStage =[
 // 現在のステージの状態
 let stage = structuredClone(initialStage);
 const game = document.getElementById("game");
+let history = [];
 
 let selectedTube = null;
 let firstIndex = null;
@@ -26,13 +27,15 @@ let secondIndex = null;
 
 const resetButton = document.getElementById("resetButton");
 resetButton.addEventListener("click", resetGame)
+const undoButton = document.getElementById("undoButton");
+undoButton.addEventListener("click", undoGame)
 
 function render(){
     // tubeの中身をすべて削除
     game.innerHTML = "";
 
     // tubeの中身更新
-    for(let i = 0; i < 5; i++){
+    for(let i = 0; i < stage.length; i++){
     const tube = document.createElement("div");
     tube.className = "tube";
     tube.dataset.index = i;
@@ -43,6 +46,7 @@ function render(){
             tube.classList.add("selected");
             firstIndex = Number(tube.dataset.index);
             secondIndex = null;
+            console.log(firstIndex, secondIndex);
         }else{
             if(selectedTube === tube){
                 tube.classList.remove("selected");
@@ -51,17 +55,13 @@ function render(){
             }else{
                 // 異なる2色を選択した場合
                 secondIndex = Number(tube.dataset.index);
-                console.log(
-                    "移動元", firstIndex,
-                    "移動先" , secondIndex
-                );
-                // 移動処理
+                console.log(firstIndex, secondIndex);
                 moveSomeLiquid(firstIndex, secondIndex);
 
                 selectedTube = null;
                 firstIndex = null;
                 secondIndex = null;
-                // 自身を呼び出して二回目以降の移動に備える 実はこれあんまり理解してない
+                // 自身を呼び出して二回目以降の移動に備える 実はこれあんまり理解してない　違うこれは動かしたらその状態を描画する目でを1セットにしてるんだ
                 render();
             }
         }
@@ -78,50 +78,42 @@ function render(){
 }
 showClearScreen();
 }
+
 render();
 
 // 移動が可能か判定する関数
 function canMove(firstIndex, secondIndex){
-    // 移動元が空じゃない
-    if(stage[firstIndex].length > 0){
-        // 移動先に空きがある
-        if(stage[secondIndex].length < 4){
-            // 移動先の色と一致している
-            if(stage[secondIndex].length === 0 || stage[firstIndex][0] === stage[secondIndex][0]){
-                return true;
-            }else{
-                // 変数の名前に失敗の原因を埋め込み、console.log(失敗理由)としてもいい
-                console.log("色が違うので注げません")
-                return false
-            }
+    console.log(firstIndex, secondIndex);
+    console.log(stage[firstIndex]);
+    console.log(stage[secondIndex]);
+    // 移動元が空じゃない かつ 移動先に空きがある
+    if(stage[firstIndex].length > 0 && stage[secondIndex].length < 4){
+        console.log("a")
+        // 移動先の色と一致している
+        if(stage[secondIndex].length === 0 || stage[firstIndex][0] === stage[secondIndex][0]){
+            return true;
         }else{
-            console.log("もう注げません")
-            return false;
+            // 変数の名前に失敗の原因を埋め込み、console.log(失敗理由)としてもいい
+            console.log("色が違うので注げません")
+            return false
         }
     }else{
-        console.log("注げる液体がありません")
+        console.log("もう注げません")
         return false;
     }
 }
 
 // バックエンドで試験管の状態を変更する関数
 function moveSingleLiquid(firstIndex, secondIndex){
-    if (canMove(firstIndex, secondIndex)){
-        // 液体移動処理
-        const moveColor = stage[firstIndex].shift()
-        stage[secondIndex].unshift(moveColor)
-        // render(); // 画面の更新はこの関数の仕事ではない
-    }else{
-        // エラーメッセージの表示
-        alert("注ぐことができません")
-    }
+    const moveColor = stage[firstIndex].shift()
+    stage[secondIndex].unshift(moveColor)
 }
 
 // 移動元の連続色数を確認して数字を返す
 function getContinusColors(firstIndex){
     const topColor1st = stage[firstIndex][0]
     let count = 1;
-    for(i = 1; i < 4; i++){
+    for(let i = 1; i < 4; i++){
         if(topColor1st === stage[firstIndex][i]){
             count = count + 1;
         }else{
@@ -148,9 +140,16 @@ function getMovingAmount(firstIndex, secondIndex){
 }
 
 function moveSomeLiquid(firstIndex, secondIndex){
-    const amount = getMovingAmount(firstIndex, secondIndex);
-    for(i = 0; i < amount; i++){
-        moveSingleLiquid(firstIndex, secondIndex);
+    console.log("movesomeLiquid")
+    console.log(firstIndex, secondIndex);
+    if (canMove(firstIndex, secondIndex)){
+        // canMoveならば履歴を採取
+        history.push(structuredClone(stage))
+        const amount = getMovingAmount(firstIndex, secondIndex);
+        console.log(amount)
+        for(i = 0; i < amount; i++){
+            moveSingleLiquid(firstIndex, secondIndex);
+        }
     }
 }
 
@@ -188,6 +187,17 @@ function retryStage(){
     resetGame()
 }
 
+function undoGame(){
+    if(history.length !== 0){
+        stage = history.pop();
+        selectedTube = null;
+        firstIndex = null;
+        secondIndex = null;
+        render();
+    }
+}
+
 /*function goNextStage(i){
     stage = structuredClone(initialStage[i+1])
+    stageを作った後に実装
 }*/

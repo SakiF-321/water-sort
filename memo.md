@@ -23,3 +23,6 @@ button.addEventListener("click", function (){
 
 ## Phase 4
 - [ ] GitHub Pages公開
+
+
+undoしたときに、2色移動のUndoすると戻るのは1色ずつになってしまう
