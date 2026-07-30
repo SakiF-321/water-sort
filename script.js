@@ -5,20 +5,50 @@ const colors = {
     3:"#7fbfff",
     4:"#2fda18"
 };
-
+const game = document.getElementById("game");
+const selectScreen = document.getElementById("selectScreen");
+let stageNumber = null
 
 // 固定の初期状態
-const initialStage =[    
-    [2, 1, 3, 3],
-    [4, 4, 2, 1],
-    [2, 1, 4, 3],
-    [3, 4, 1, 2],
-    []
+const initialStage =[
+    [
+        [2, 1, 4, 3],
+        [4, 4, 2, 1],
+        [2, 1, 4, 3],
+        [3, 3, 1, 2],
+        []
+    ],
+    [
+        [1, 2, 3, 4],
+        [2, 1, 3, 4],
+        [3, 1, 2, 4],
+        [2, 3, 1, 4],
+        []
+    ]
 ];
 
-// 現在のステージの状態
-let stage = structuredClone(initialStage);
-const game = document.getElementById("game");
+//ステージボタン生成
+function createButtonForStage(){
+    console.log(1)
+    for(let i = 0; i < initialStage.length; i++){
+        console.log(2)
+        const stageButton = document.createElement("div");
+        stageButton.textContent = ("Stage "+(i+1));
+        selectScreen.append(stageButton)
+        stageButton.className = "button";
+        stageButton.dataset.index = i;
+        stageButton.addEventListener("click", function(){
+            stageNumber = i;
+            game.classList.remove("hidden")
+            selectScreen.classList.add("hidden")
+            stage = structuredClone(initialStage[i])
+            // forのletで作ったiはイベントの中でも覚えている
+            render();
+        })
+    }
+}
+
+createButtonForStage();
 let history = [];
 
 let selectedTube = null;
@@ -27,13 +57,16 @@ let secondIndex = null;
 
 const resetButton = document.getElementById("resetButton");
 resetButton.addEventListener("click", resetGame)
+const retryButton = document.getElementById("retryButton");
+retryButton.addEventListener("click", resetGame)
 const undoButton = document.getElementById("undoButton");
 undoButton.addEventListener("click", undoGame)
+const nextButton = document.getElementById("nextButton");
+nextButton.addEventListener("click", goNextStage)
 
 function render(){
     // tubeの中身をすべて削除
     game.innerHTML = "";
-
     // tubeの中身更新
     for(let i = 0; i < stage.length; i++){
     const tube = document.createElement("div");
@@ -66,7 +99,6 @@ function render(){
             }
         }
     })
-
     game.append(tube);
 
     for(let j = 0; j < stage[i].length; j++){
@@ -154,7 +186,7 @@ function moveSomeLiquid(firstIndex, secondIndex){
 }
 
 function resetGame(){
-    stage = structuredClone(initialStage);
+    stage = structuredClone(initialStage[stageNumber]);
     selectedTube = null;
     firstIndex = null;
     secondIndex = null;
@@ -197,7 +229,10 @@ function undoGame(){
     }
 }
 
-/*function goNextStage(i){
-    stage = structuredClone(initialStage[i+1])
-    stageを作った後に実装
-}*/
+function goNextStage(){
+    console.log(stageNumber);
+    console.log(initialStage[stageNumber + 1]);
+    stageNumber = stageNumber + 1;
+    stage = structuredClone(initialStage[stageNumber])
+    render();
+}
