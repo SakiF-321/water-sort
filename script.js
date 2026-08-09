@@ -1,4 +1,5 @@
 console.log("今日も挫折せず続けててえらい");
+
 const colors = {
     1:"#ff7f7f",
     2:"#ffff7f",
@@ -8,6 +9,9 @@ const colors = {
 const game = document.getElementById("game");
 const tubeContainer = document.getElementById("tubeContainer");
 const selectScreen = document.getElementById("selectScreen");
+let moves = 0;
+const moveCount = document.getElementById("moveCount");
+moveCount.textContent = ("Moves:" + moves);
 let stageNumber = null
 
 // 固定の初期状態
@@ -57,8 +61,14 @@ const undoButton = document.getElementById("undoButton");
 undoButton.addEventListener("click", undoGame)
 const nextButton = document.getElementById("nextButton");
 nextButton.addEventListener("click", goNextStage)
-//const addTubeButton = document.getElementById("");
-//addTubeButton.addEventListener("click", tubeを1本増やし、スコアを減らすような処理)
+
+const addTubeButton = document.getElementById("addTubeButton");
+addTubeButton.addEventListener("click",function(){
+    createOneTube(stage.length)
+    stage.push([])
+    console.log("tubeを追加しました")
+    //スコアを減らす処理
+    })
 
 
 //ステージボタン生成
@@ -204,6 +214,8 @@ function moveSomeLiquid(firstIndex, secondIndex){
     if (canMove(firstIndex, secondIndex)){
         // canMoveならば履歴を採取
         history.push(structuredClone(stage))
+        moves = moves + 1
+        moveCount.textContent = ("Moves:" + moves);
         const amount = getMovingAmount(firstIndex, secondIndex);
         console.log(amount + "滴移動しました")
         for(i = 0; i < amount; i++){
@@ -214,10 +226,14 @@ function moveSomeLiquid(firstIndex, secondIndex){
 
 function resetGame(){
     stage = structuredClone(initialStage[stageNumber]);
+    moves = 0;
+    moveCount.textContent = ("Moves:" + moves)
     selectedTube = null;
     firstIndex = null;
     secondIndex = null;
     clearScreen.classList.add("hidden")
+    game.classList.remove("hidden")
+    createSomeTubes();
     render();
 }
 
@@ -234,13 +250,16 @@ function isTubeClear(index){
 function isGameClear(){
     for(let i = 0; i < stage.length; i++){
         if(!isTubeClear(i)){return false}
-    }return true
+    }
+    return true
 }
 
 function showClearScreen(){
     if(isGameClear()){
         game.classList.add("hidden")
         clearScreen.classList.remove("hidden")
+        const clearMoves = document.getElementById("clearMoves")
+        clearMoves.textContent = ("Moves:" + moves);
     }
 }
 
@@ -255,6 +274,8 @@ function undoGame(){
         selectedTube = null;
         firstIndex = null;
         secondIndex = null;
+        moves = moves + 1
+        moveCount.textContent = ("Moves:" + moves);
         render();
     }
 }
@@ -264,6 +285,8 @@ function goNextStage(){
     stageNumber = stageNumber + 1;
     stage = structuredClone(initialStage[stageNumber])
     console.log(stage)
+    moves = 0;
+    moveCount.textContent = ("Moves:" + moves)
     clearScreen.classList.add("hidden")
     game.classList.remove("hidden")
     createSomeTubes();

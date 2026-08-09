@@ -57,8 +57,25 @@
     /* 余白の大きさ*/
     padding: 10px 30px;
     color: #FFF;
-    background: #4150a1;/*背景色*/
-    border-bottom: solid 2px #0d1f80;/*少し濃い目の色に*/
+    background: #a16741;/*背景色*/
+    border-bottom: solid 2px #5e3c25;/*少し濃い目の色に*/
+    border-radius: 4px;/*角の丸み*/
+    box-shadow: inset 0 2px 0 rgba(255,255,255,0.2), 0 2px 2px rgba(0, 0, 0, 0.19);
+    font-weight: bold;
+}
+
+.button1{
+    /*上部からの余白*/
+    margin-top: 20px;
+    /*中央ぞろえ*/
+    justify-content: center;
+    /* テキストボックスみたいに文字列を加工*/
+    display: inline-block;
+    /* 余白の大きさ*/
+    padding: 10px 30px;
+    color: #FFF;
+    background: #5e3c25;/*背景色*/
+    border-bottom: solid 2px #332014;/*少し濃い目の色に*/
     border-radius: 4px;/*角の丸み*/
     box-shadow: inset 0 2px 0 rgba(255,255,255,0.2), 0 2px 2px rgba(0, 0, 0, 0.19);
     font-weight: bold;
@@ -73,5 +90,6 @@
 }
 
 #clearScreen{
-    background-color: rgba(0, 0, 0, 0.2);
+    border: 3px solid #201810cc;
+    background-color: rgba(248, 204, 154, 0.486);
 }
