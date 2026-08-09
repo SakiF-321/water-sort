@@ -1,3 +1,15 @@
+#tubeContainer{
+    display: flex;
+    gap: 20px;
+}
+
+#selectScreen{
+    gap: 10px;
+}
+
+#gameButtons{
+    display: flex;
+}
 .tube{
     width: 60px;
     height: 220px;
@@ -25,7 +37,6 @@
 }
 
 #game{
-    display: flex;
     gap: 20px;
     justify-content: center;
 }

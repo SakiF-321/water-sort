@@ -6,11 +6,17 @@ const colors = {
     4:"#2fda18"
 };
 const game = document.getElementById("game");
+const tubeContainer = document.getElementById("tubeContainer");
 const selectScreen = document.getElementById("selectScreen");
 let stageNumber = null
 
 // 固定の初期状態
 const initialStage =[
+    [
+        [1, 1, 2, 2],
+        [2, 2, 1, 1],
+        []
+    ],
     [
         [2, 1, 4, 3],
         [4, 4, 2, 1],
@@ -22,35 +28,23 @@ const initialStage =[
         [1, 2, 3, 4],
         [2, 1, 3, 4],
         [3, 1, 2, 4],
-        [2, 3, 1, 4],
+        [2, 3, 4, 1],
         []
     ]
 ];
 
-//ステージボタン生成
-function createButtonForStage(){
-    console.log(1)
-    for(let i = 0; i < initialStage.length; i++){
-        console.log(2)
-        const stageButton = document.createElement("div");
-        stageButton.textContent = ("Stage "+(i+1));
-        selectScreen.append(stageButton)
-        stageButton.className = "button";
-        stageButton.dataset.index = i;
-        stageButton.addEventListener("click", function(){
-            stageNumber = i;
-            game.classList.remove("hidden")
-            selectScreen.classList.add("hidden")
-            stage = structuredClone(initialStage[i])
-            // forのletで作ったiはイベントの中でも覚えている
-            render();
-        })
-    }
-}
 
-createButtonForStage();
+const selectStageButton = document.getElementById("selectStageButton")
+selectStageButton.addEventListener("click", function(){
+    //hiddenが機能しない
+    game.classList.add("hidden")
+    clearScreen.classList.add("hidden")
+    selectScreen.classList.remove("hidden")
+    createButtonForStage();
+})
+
+
 let history = [];
-
 let selectedTube = null;
 let firstIndex = null;
 let secondIndex = null;
@@ -63,12 +57,34 @@ const undoButton = document.getElementById("undoButton");
 undoButton.addEventListener("click", undoGame)
 const nextButton = document.getElementById("nextButton");
 nextButton.addEventListener("click", goNextStage)
+//const addTubeButton = document.getElementById("");
+//addTubeButton.addEventListener("click", tubeを1本増やし、スコアを減らすような処理)
 
-function render(){
-    // tubeの中身をすべて削除
-    game.innerHTML = "";
-    // tubeの中身更新
-    for(let i = 0; i < stage.length; i++){
+
+//ステージボタン生成
+function createButtonForStage(){
+    selectScreen.innerHTML = "";
+    tubeContainer.innerHTML = "";
+    for(let i = 0; i < initialStage.length; i++){
+        const stageButton = document.createElement("div");
+        stageButton.textContent = ("Stage " + (i+1));
+        selectScreen.append(stageButton)
+        stageButton.className = "button";
+        stageButton.dataset.index = i;
+        stageButton.addEventListener("click", function(){
+            stageNumber = i;
+            game.classList.remove("hidden")
+            selectScreen.classList.add("hidden")
+            stage = structuredClone(initialStage[i])
+            // forのletで作ったiはイベントの中でも覚えている
+            createSomeTubes();
+            render();
+        })
+    }
+}
+
+// indexがiのtubeを作成
+function createOneTube(i){
     const tube = document.createElement("div");
     tube.className = "tube";
     tube.dataset.index = i;
@@ -90,6 +106,7 @@ function render(){
                 secondIndex = Number(tube.dataset.index);
                 console.log(firstIndex, secondIndex);
                 moveSomeLiquid(firstIndex, secondIndex);
+                selectedTube.classList.remove("selected")
 
                 selectedTube = null;
                 firstIndex = null;
@@ -99,28 +116,40 @@ function render(){
             }
         }
     })
-    game.append(tube);
+    tubeContainer.append(tube);
+}
 
-    for(let j = 0; j < stage[i].length; j++){
-        const liquid = document.createElement("div");
-        liquid.className = "liquid";
-        liquid.style.backgroundColor = colors[stage[i][j]];
-        tube.append(liquid);
+
+function createSomeTubes(){
+    tubeContainer.innerHTML = "";
+    for(let i = 0; i < stage.length; i++){
+        createOneTube(i);
     }
 }
+
+// liquidの更新とクリア判定を行う
+function render(){
+    for(let i = 0; i < stage.length; i++){
+        let tube = tubeContainer.children[i];
+        tube.innerHTML = "";
+        for(let j = 0; j < stage[i].length; j++){
+            const liquid = document.createElement("div");
+            liquid.className = "liquid";
+            liquid.style.backgroundColor = colors[stage[i][j]];
+            tube.append(liquid);
+        }
+    }
 showClearScreen();
 }
 
-render();
 
 // 移動が可能か判定する関数
 function canMove(firstIndex, secondIndex){
-    console.log(firstIndex, secondIndex);
-    console.log(stage[firstIndex]);
-    console.log(stage[secondIndex]);
+    //console.log(firstIndex, secondIndex);
+    //console.log(stage[firstIndex]);
+    //console.log(stage[secondIndex]);
     // 移動元が空じゃない かつ 移動先に空きがある
     if(stage[firstIndex].length > 0 && stage[secondIndex].length < 4){
-        console.log("a")
         // 移動先の色と一致している
         if(stage[secondIndex].length === 0 || stage[firstIndex][0] === stage[secondIndex][0]){
             return true;
@@ -172,13 +201,11 @@ function getMovingAmount(firstIndex, secondIndex){
 }
 
 function moveSomeLiquid(firstIndex, secondIndex){
-    console.log("movesomeLiquid")
-    console.log(firstIndex, secondIndex);
     if (canMove(firstIndex, secondIndex)){
         // canMoveならば履歴を採取
         history.push(structuredClone(stage))
         const amount = getMovingAmount(firstIndex, secondIndex);
-        console.log(amount)
+        console.log(amount + "滴移動しました")
         for(i = 0; i < amount; i++){
             moveSingleLiquid(firstIndex, secondIndex);
         }
@@ -190,6 +217,7 @@ function resetGame(){
     selectedTube = null;
     firstIndex = null;
     secondIndex = null;
+    clearScreen.classList.add("hidden")
     render();
 }
 
@@ -211,9 +239,11 @@ function isGameClear(){
 
 function showClearScreen(){
     if(isGameClear()){
+        game.classList.add("hidden")
         clearScreen.classList.remove("hidden")
     }
 }
+
 
 function retryStage(){
     resetGame()
@@ -231,8 +261,16 @@ function undoGame(){
 
 function goNextStage(){
     console.log(stageNumber);
-    console.log(initialStage[stageNumber + 1]);
     stageNumber = stageNumber + 1;
     stage = structuredClone(initialStage[stageNumber])
+    console.log(stage)
+    clearScreen.classList.add("hidden")
+    game.classList.remove("hidden")
+    createSomeTubes();
     render();
 }
+
+
+
+//初期画面の描画
+createButtonForStage();

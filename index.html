@@ -6,15 +6,22 @@
     <title>WaterSort Game</title>
     <link rel="stylesheet" href="style.css">
     <div id = "menu">
-    <h3 class="choice">Select Stage</h3>
-    <h3 class="choice">Settings</h3>
+    <button id="selectStageButton">Select Stage</button>
+    <button>Settings</button>
     </div>
 </head>
 <body>
    <h1 id="title">Hello Water Sort!</h1> 
    <div id="selectScreen"></div>
 
-   <div id="game" class = "hidden"></div>
+   <div id="game" class = "hidden">
+    <div id = "tubeContainer">
+    </div>
+    <div id = "gameButtons">
+        <button id = "resetButton" class = "button">Reset</button>
+        <button id = "undoButton" class = "button">Undo</button>
+    </div>
+    </div>
    <!--<div id = "moveCount"><div>-->
 
    <div id = "clearScreen" class = "hidden">
@@ -23,8 +30,6 @@
     <button id = "nextButton" class = "button">NextStage</button>
     </div>
 
-   <button id ="resetButton" class = "button">リセット</button>
-   <button id = "undoButton" class = "button">Undo</button>
    <script src="script.js"></script>
 </body>
 </html>
